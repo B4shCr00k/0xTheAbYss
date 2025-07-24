@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Posts on B4shCr00k</title>
-        <link>https://demo.stack.jimmycai.com/post/</link>
+        <link>https://B4shCr00k.github.io/TheAbYss/post/</link>
         <description>Recent content in Posts on B4shCr00k</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://demo.stack.jimmycai.com/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://B4shCr00k.github.io/TheAbYss/post/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Resolving Imports Remotely</title>
-        <link>https://demo.stack.jimmycai.com/posts/resolving-imports-remotely/</link>
+        <link>https://B4shCr00k.github.io/TheAbYss/posts/resolving-imports-remotely/</link>
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
-        <guid>https://demo.stack.jimmycai.com/posts/resolving-imports-remotely/</guid>
-        <description>&lt;img src="https://demo.stack.jimmycai.com/posts/resolving-imports-remotely/nice.jpg" alt="Featured image of post Resolving Imports Remotely" /&gt;&lt;h1 id=&#34;what-are-imports&#34;&gt;what are imports
+        <guid>https://B4shCr00k.github.io/TheAbYss/posts/resolving-imports-remotely/</guid>
+        <description>&lt;img src="https://B4shCr00k.github.io/TheAbYss/posts/resolving-imports-remotely/nice.jpg" alt="Featured image of post Resolving Imports Remotely" /&gt;&lt;h1 id=&#34;what-are-imports&#34;&gt;what are imports
 &lt;/h1&gt;&lt;p&gt;basically imports are functions a pe needs to function properly, these functions are located inside dlls (dynamic link libraries) so first the executable needs to load the dll then find the functions he needs and get their addresses&lt;/p&gt;
 &lt;p&gt;now in order to know which functions an executable needs there is something called the IAT table which is a table inside the import directory in the pe structure, this table contains all the names of the functions the exe (or the dll) needs as well as their addresses&lt;/p&gt;
 &lt;p&gt;when the exe first lunches the iat will be empty just names but no addresses so windows automatically reads this table, finds which dlls contains the functions, loads them using a function called &lt;code&gt;LoadLibraryA()&lt;/code&gt; which will patch this table with then use something like &lt;code&gt;GetProcAddress()&lt;/code&gt; to get the function addresses then patch the iat table with the correct addresses so the exe now works well&lt;/p&gt;
