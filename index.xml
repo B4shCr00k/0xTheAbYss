@@ -2,25 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>B4shCr00k</title>
-        <link>https://B4shCr00k.github.io/TheAbYss/</link>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/</link>
         <description>Recent content on B4shCr00k</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Wed, 23 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://B4shCr00k.github.io/TheAbYss/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Wed, 23 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://B4shCr00k.github.io/0xTheAbYss/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Archives</title>
-        <link>https://B4shCr00k.github.io/TheAbYss/archives/</link>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/archives/</link>
         <pubDate>Wed, 23 Jul 2025 00:00:00 +0000</pubDate>
         
-        <guid>https://B4shCr00k.github.io/TheAbYss/archives/</guid>
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/archives/</guid>
         <description></description>
         </item>
         <item>
         <title>Resolving Imports Remotely</title>
-        <link>https://B4shCr00k.github.io/TheAbYss/posts/resolving-imports-remotely/</link>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/posts/resolving-imports-remotely/</link>
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
-        <guid>https://B4shCr00k.github.io/TheAbYss/posts/resolving-imports-remotely/</guid>
-        <description>&lt;img src="https://B4shCr00k.github.io/TheAbYss/posts/resolving-imports-remotely/nice.jpg" alt="Featured image of post Resolving Imports Remotely" /&gt;&lt;h1 id=&#34;what-are-imports&#34;&gt;what are imports
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/posts/resolving-imports-remotely/</guid>
+        <description>&lt;img src="https://B4shCr00k.github.io/0xTheAbYss/posts/resolving-imports-remotely/nice.jpg" alt="Featured image of post Resolving Imports Remotely" /&gt;&lt;h1 id=&#34;what-are-imports&#34;&gt;what are imports
 &lt;/h1&gt;&lt;p&gt;basically imports are functions a pe needs to function properly, these functions are located inside dlls (dynamic link libraries) so first the executable needs to load the dll then find the functions he needs and get their addresses&lt;/p&gt;
 &lt;p&gt;now in order to know which functions an executable needs there is something called the IAT table which is a table inside the import directory in the pe structure, this table contains all the names of the functions the exe (or the dll) needs as well as their addresses&lt;/p&gt;
 &lt;p&gt;when the exe first lunches the iat will be empty just names but no addresses so windows automatically reads this table, finds which dlls contains the functions, loads them using a function called &lt;code&gt;LoadLibraryA()&lt;/code&gt; which will patch this table with then use something like &lt;code&gt;GetProcAddress()&lt;/code&gt; to get the function addresses then patch the iat table with the correct addresses so the exe now works well&lt;/p&gt;
@@ -38,10 +38,10 @@ where IMAGE_DIRECTORY_ENTRY_IMPORT is a macro for 1&lt;/li&gt;
         </item>
         <item>
         <title>docs</title>
-        <link>https://B4shCr00k.github.io/TheAbYss/categories/docs/</link>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/categories/docs/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://B4shCr00k.github.io/TheAbYss/categories/docs/</guid>
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/categories/docs/</guid>
         <description>&lt;h1 id=&#34;documentations&#34;&gt;Documentations
 &lt;/h1&gt;&lt;ul&gt;
 &lt;li&gt;Docs For things i think are worth explaining usually because of how long i spent to understand them hope it makes things easier for you ;)&lt;/li&gt;
@@ -50,27 +50,27 @@ where IMAGE_DIRECTORY_ENTRY_IMPORT is a macro for 1&lt;/li&gt;
         </item>
         <item>
         <title>Links</title>
-        <link>https://B4shCr00k.github.io/TheAbYss/links/</link>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/links/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://B4shCr00k.github.io/TheAbYss/links/</guid>
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/links/</guid>
         <description>&lt;p&gt;&amp;mdash;&amp;mdash;&amp;ndash; You can contact me on telegram or Discord (more active on discord)&lt;/p&gt;
 </description>
         </item>
         <item>
         <title>pocs</title>
-        <link>https://B4shCr00k.github.io/TheAbYss/categories/pocs/</link>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/categories/pocs/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://B4shCr00k.github.io/TheAbYss/categories/pocs/</guid>
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/categories/pocs/</guid>
         <description></description>
         </item>
         <item>
         <title>Search</title>
-        <link>https://B4shCr00k.github.io/TheAbYss/search/</link>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
-        <guid>https://B4shCr00k.github.io/TheAbYss/search/</guid>
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/search/</guid>
         <description></description>
         </item>
         
