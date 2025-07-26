@@ -330,7 +330,7 @@
 
 
                 <time class="article-time--reading">
-                    7 minute read
+                    8 minute read
                 </time>
             </div>
         
@@ -508,7 +508,104 @@
 <p>finally we load the driver with <code>sc start HelloWorldDriver</code> or whatever name u chose you should see the messages appear in your DebugView interface if u dont its because you didnt enable the correct options under the capture tab to unload the driver we use <code>sc stop HelloWorldDriver</code></p>
 </li>
 </ul>
-
+<p>FULL CODE :</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">#include &lt;ntddk.h&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">#define DRIVER_TAG &#39;bdwh&#39; </span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">UNICODE_STRING</span> <span class="n">g_RegPath</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">void</span> <span class="n">UnloadMe</span><span class="p">(</span><span class="n">PDRIVER_OBJECT</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">NTSTATUS</span> <span class="n">DriverEntry</span><span class="p">(</span><span class="n">PDRIVER_OBJECT</span> <span class="n">DriverObject</span><span class="p">,</span> <span class="n">PUNICODE_STRING</span> <span class="n">RegistryPath</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">DbgPrint</span><span class="p">(</span><span class="s2">&#34;[+] Driver loaded successfully.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">DbgPrint</span><span class="p">(</span><span class="s2">&#34;[+] Driver Object: %p</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">DriverObject</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">DbgPrint</span><span class="p">(</span><span class="s2">&#34;[+] Registry Path: %p</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">RegistryPath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">g_RegPath</span><span class="o">.</span><span class="n">Buffer</span> <span class="o">=</span> <span class="p">(</span><span class="n">PWSTR</span><span class="p">)</span><span class="n">ExAllocatePool2</span><span class="p">(</span><span class="n">POOL_FLAG_PAGED</span><span class="p">,</span> <span class="n">RegistryPath</span><span class="o">-&gt;</span><span class="n">Length</span><span class="p">,</span> <span class="n">DRIVER_TAG</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">g_RegPath</span><span class="o">.</span><span class="n">Buffer</span> <span class="o">==</span> <span class="n">NULL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">DbgPrint</span><span class="p">(</span><span class="s2">&#34;[-] Failed To Allocate Space For The Reg&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="n">STATUS_NO_MEMORY</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="n">memcpy</span><span class="p">(</span><span class="n">g_RegPath</span><span class="o">.</span><span class="n">Buffer</span><span class="p">,</span> <span class="n">RegistryPath</span><span class="o">-&gt;</span><span class="n">Buffer</span><span class="p">,</span> <span class="n">RegistryPath</span><span class="o">-&gt;</span><span class="n">Length</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">g_RegPath</span><span class="o">.</span><span class="n">Length</span> <span class="o">=</span> <span class="n">g_RegPath</span><span class="o">.</span><span class="n">MaximumLength</span> <span class="o">=</span> <span class="n">RegistryPath</span><span class="o">-&gt;</span><span class="n">Length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="n">DbgPrint</span><span class="p">(</span><span class="s2">&#34;Param Key Copy %wZ</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">,</span><span class="n">g_RegPath</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">DriverObject</span><span class="o">-&gt;</span><span class="n">DriverUnload</span> <span class="o">=</span> <span class="n">UnloadMe</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="n">STATUS_SUCCESS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">void</span> <span class="n">UnloadMe</span><span class="p">(</span><span class="n">PDRIVER_OBJECT</span> <span class="n">DriverObject</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	<span class="n">UNREFERENCED_PARAMETER</span><span class="p">(</span><span class="n">DriverObject</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">DbgPrint</span><span class="p">(</span><span class="s2">&#34;[+] Driver unloaded successfully.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="n">DbgPrint</span><span class="p">(</span><span class="s2">&#34;[+] Driver Object: %p</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">,</span> <span class="n">DriverObject</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="p">(</span><span class="n">g_RegPath</span><span class="o">.</span><span class="n">Buffer</span> <span class="o">!=</span> <span class="n">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="n">ExFreePool</span><span class="p">(</span><span class="n">g_RegPath</span><span class="o">.</span><span class="n">Buffer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="n">g_RegPath</span><span class="o">.</span><span class="n">Buffer</span> <span class="o">=</span> <span class="n">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl">	<span class="n">DbgPrint</span><span class="p">(</span><span class="s2">&#34;[+] Driver Unloaded</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
 </section>
 
 
