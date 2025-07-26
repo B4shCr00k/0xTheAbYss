@@ -7,6 +7,22 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://B4shCr00k.github.io/0xTheAbYss/tags/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Drivers</title>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/tags/drivers/</link>
+        <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/tags/drivers/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Kernel</title>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/tags/kernel/</link>
+        <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/tags/kernel/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>Pe Loading</title>
         <link>https://B4shCr00k.github.io/0xTheAbYss/tags/pe-loading/</link>
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
@@ -20,6 +36,14 @@
         <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
         
         <guid>https://B4shCr00k.github.io/0xTheAbYss/tags/pe-parsing/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Windows</title>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/tags/windows/</link>
+        <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/tags/windows/</guid>
         <description></description>
         </item>
         

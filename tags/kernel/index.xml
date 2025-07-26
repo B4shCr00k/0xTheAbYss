@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Kernel on B4shCr00k</title>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/tags/kernel/</link>
+        <description>Recent content in Kernel on B4shCr00k</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Tue, 22 Jul 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://B4shCr00k.github.io/0xTheAbYss/tags/kernel/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Introduction Into Windows Kernel Drivers</title>
+        <link>https://B4shCr00k.github.io/0xTheAbYss/posts/introduction-into-windows-kernel-drivers/</link>
+        <pubDate>Tue, 22 Jul 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://B4shCr00k.github.io/0xTheAbYss/posts/introduction-into-windows-kernel-drivers/</guid>
+        <description>&lt;img src="https://B4shCr00k.github.io/0xTheAbYss/posts/introduction-into-windows-kernel-drivers/raven.jpg" alt="Featured image of post Introduction Into Windows Kernel Drivers" /&gt;&lt;h1 id=&#34;hello-from-kernel&#34;&gt;Hello From Kernel
+&lt;/h1&gt;&lt;p&gt;In this guide i will help you write your first windows kernel driver using kmdf&lt;/p&gt;
+&lt;h1 id=&#34;this-guide-will-cover&#34;&gt;This Guide Will Cover
+&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;What are drivers&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Prerequisite&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;User Mode VS Kernel Mode&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Code WalkThrough&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Compiling and loading the driver&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;what-are-drivers&#34;&gt;What Are Drivers
+&lt;/h2&gt;&lt;p&gt;A driver is a piece of software that allows the operating system to communicate with hardware devices. In our case, we are developing what&amp;rsquo;s known as a software driver, a type of driver that facilitates communication between user mode and kernel mode, without necessarily interacting with physical hardware. These drivers are essential for tasks that require privileged access to system resources, such as monitoring, hooking, or custom control mechanisms.&lt;/p&gt;
+&lt;p&gt;When it comes to malware and rootkits, drivers take on a more malicious role. In this context, a driver can be used to gain low-level access to the operating system, often bypassing security mechanisms like User Account Control (UAC) or antivirus protections. Kernel-mode drivers used by rootkits can hide files, processes, or registry keys, intercept system calls, and exert stealthy control over the system—making them one of the most powerful tools in advanced malware development.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisite&#34;&gt;Prerequisite
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;First of all you really don&amp;rsquo;t want to test drivers on your main (host) machine since any fatal mistake will make your system crash therefore having a testing environnement is so important i advice using a virtual machine you can use vmware (free version) or virtual box which is free as well&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;once you have the testing machine ready disable memory integrity options from the windows security settings then we need to enable test signing to do so run the following commands on an elevated cmd (run as administrator)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;bcdedit&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;exe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;set&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;loadoptions&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DISABLE_INTEGRITY_CHECKS&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;bcdedit&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;exe&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;set&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;TESTSIGNING&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ON&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;you might get something like &amp;ldquo;The value is protected by Secure Boot policy and cannot be modified or deleted&amp;rdquo; in this case you have secure boot on you should go google how to disable secure boot for your machine usually from the bios&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;now we are done from setting up the testing machine lets set up the machine where we will be coding our diver, first you will need to install visual studio, sdk and wdk &lt;a class=&#34;link&#34; href=&#34;https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;here&lt;/a&gt; is a guide by microsoft&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;next we can set up kernel debugging using windbg but its pretty complicated and unnecessary for now so we you can just download DebugView on the testing machine&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;finally we create a kmdf empty project using visual studio add a main.c under your source folder and delete the driver you will find under driver files since we dont need it&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;user-mode-vs-kernel-mode&#34;&gt;User Mode VS Kernel Mode
+&lt;/h2&gt;&lt;p&gt;for security, stability, and control reasons execution is split into two modes :&lt;/p&gt;
+&lt;p&gt;&amp;mdash; user mode where normal programs like browsers games text editors run it cannot access memory used by the os and needs to call the os using high level api windows functions in order to do such things, programs in user mode has a private virtual memory meaning when a process runs it thinks it owns the entire memory to it self this is implemented for security reasons as well as other reasons read &lt;a class=&#34;link&#34; href=&#34;https://learn.microsoft.com/en-us/windows-hardware/drivers/gettingstarted/virtual-address-spaces&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;this&lt;/a&gt; for more infos on virtual memory&lt;/p&gt;
+&lt;p&gt;&amp;mdash; kernel mode where the kernel itself, drivers and os programs run it can literally do anything in this system in kernel mode you have full access to hardware, memory and system resources all programs that run in kernel mode share the same virtual space meaning if something happens to one program it will crash the entire system leading to a BSOD or other fatal errors&lt;/p&gt;
+&lt;p&gt;drivers are like a bridge that allow us to run code in kernel space&lt;/p&gt;
+&lt;h2 id=&#34;code-walkthrough&#34;&gt;Code WalkThrough
+&lt;/h2&gt;&lt;p&gt;Now We will code a simple hello world from the kernel poc&lt;/p&gt;
+&lt;p&gt;we need to be very careful when coding drivers and we need to follow a spesific structure open main.c and lets start coding&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;first we include  &lt;code&gt;#include &amp;lt;ntddk.h&amp;gt;&lt;/code&gt; which has everything we need to code our driver&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;next we define something called a tag which is used to track down memory allocations made by the driver we use this for debugging so we can easily know what driver allocated this memory space &lt;code&gt;#define DRIVER_TAG &#39;gaT&#39;&lt;/code&gt; first we write the name in reverse due to the little endian and use single quotes we also need to define a  &lt;code&gt;UNICODE_STRING&lt;/code&gt; which is a structure for unicode strings which a lot of low level functions need it has 3 fields &lt;code&gt;length&lt;/code&gt; which is the size of the buffer in bytes and not null terminated &lt;code&gt;MaximumLength&lt;/code&gt; which is the max size the buffer can hold &lt;code&gt;buffer&lt;/code&gt; the actual unicode string so &lt;code&gt;UNICODE_STRING g_RegPath;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;next we define our entrypoint which is &lt;code&gt;NTSTATUS DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath)&lt;/code&gt; the driverobject is a struct that holds all the important infos about our drivers it has things like &lt;code&gt;DriverObject-&amp;gt;DriverUnload&lt;/code&gt; which is the code that will get executed once the driver is unloaded this struct is very important and is like a handle to control the driver, the registery path is a unicode string that has something like &amp;ldquo;\Registry\Machine\System\CurrentControlSet\Services\MyDriver&amp;rdquo; we will print it later&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;inside our function we will be using something called&lt;code&gt;DbgPrint();&lt;/code&gt; which is just like &lt;code&gt;printf()&lt;/code&gt; in user mode this function will allow us to debug the driver using print statements we can later read using debugging tools, next we print the driverobject and the registerypath like this&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	DbgPrint(&amp;#34;[+] Driver Object: %p\n&amp;#34;, DriverObject);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   DbgPrint(&amp;#34;[+] Registry Path: %p\n&amp;#34;, RegistryPath);
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;next we will allocate space for our buffer to populate our &lt;code&gt;g_RegPath&lt;/code&gt; unicode string struct we do this so can save the reg path for later use since its only save to access it i the DriverEntry only to do this we will get into memory allocation in kernel mode, there are more than one function to allocate space in kernel mode unlike use mode where we can use malloc we can use &lt;code&gt;ExAllocatePool2()&lt;/code&gt; which is a new function used to allocate space in memory safely so &lt;code&gt;g_RegPath.Buffer = (PWSTR)ExAllocatePool2(POOL_FLAG_PAGED, RegistryPath-&amp;gt;Length, DRIVER_TAG)&lt;/code&gt; we are allocating space for our buffer and we store the pointer inside &lt;code&gt;g_RegPath.Buffer&lt;/code&gt; the first argument is &lt;code&gt;POOL_FLAG_PAGED&lt;/code&gt; read more about memory pools &lt;a class=&#34;link&#34; href=&#34;https://learn.microsoft.com/en-us/windows-hardware/drivers/gettingstarted/virtual-addres&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;here&lt;/a&gt; next we can how many bytes we will allocate &lt;code&gt;RegistryPath-&amp;gt;Length&lt;/code&gt;  which is the length of the regpath buffer, finally we have the tag we will use for this memory space &lt;code&gt;DRIVER_TAG&lt;/code&gt; which is Test in our case next we run a test to see if it the buffer is still null just like with malloc&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	if (g_RegPath.Buffer == NULL)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   {
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   	DbgPrint(&amp;#34;[-] Failed To Allocate Space For The Reg&amp;#34;);
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   	return STATUS_NO_MEMORY;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   }
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;then we copy the registerypath from the param into our buffer using memcpy &lt;code&gt;memcpy(g_RegPath.Buffer, RegistryPath-&amp;gt;Buffer, RegistryPath-&amp;gt;Length);&lt;/code&gt; also we set the length to same length &lt;code&gt;	g_RegPath.Length = g_RegPath.MaximumLength = RegistryPath-&amp;gt;Length;&lt;/code&gt; and finally we dbgprint a message &lt;code&gt;	DbgPrint(&amp;quot;Param Key Copy %wZ\n&amp;quot;,g_RegPath)&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;now we need to set &lt;code&gt;DriverObject-&amp;gt;DriverUnload&lt;/code&gt; into our unload function which will run when the driver unload &lt;code&gt;DriverObject-&amp;gt;DriverUnload = UnloadMe&lt;/code&gt; so make sure you defined this function before the DriverEntry Function so the compiler can recognize it&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;now we code the actual UnloadMe function it takes one param which is the driverobject struct for now we will just free the allocated space which is something you should always do in kernel mode&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;UnloadMe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;PDRIVER_OBJECT&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DriverObject&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;UNREFERENCED_PARAMETER&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;DriverObject&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;DbgPrint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;[+] Driver unloaded successfully.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;DbgPrint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;[+] Driver Object: %p&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;DriverObject&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;g_RegPath&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Buffer&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   	&lt;span class=&#34;n&#34;&gt;ExFreePool&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;g_RegPath&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Buffer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   	&lt;span class=&#34;n&#34;&gt;g_RegPath&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Buffer&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   &lt;span class=&#34;n&#34;&gt;DbgPrint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;[+] Driver Unloaded&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;we used &lt;code&gt;ExFreePool(g_RegPath.Buffer);&lt;/code&gt; which is just like &lt;code&gt;free()&lt;/code&gt; in um&lt;/p&gt;
+&lt;h2 id=&#34;compiling-and-loading-the-driver&#34;&gt;Compiling and loading the driver
+&lt;/h2&gt;&lt;p&gt;to build the project just build in visual studio and make sure you do so in debug mode or all the debug messages wont appear&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;to install the driver we will use &lt;code&gt;Service Controller&lt;/code&gt; (sc.exe) to do so we run this command
+&lt;code&gt;sc create HelloWorldDriver type= kernel binPath= C:\MyDrivers\HelloWorldDriver.sys&lt;/code&gt; change the path into ur dirver&amp;rsquo;s path you can also change HelloWorldDriver into whatever name u want now open DebugView and enable all the kernel capture options under capture&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;finally we load the driver with &lt;code&gt;sc start HelloWorldDriver&lt;/code&gt; or whatever name u chose you should see the messages appear in your DebugView interface if u dont its because you didnt enable the correct options under the capture tab to unload the driver we use &lt;code&gt;sc stop HelloWorldDriver&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
